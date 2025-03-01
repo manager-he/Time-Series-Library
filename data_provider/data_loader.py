@@ -109,7 +109,123 @@ class Dataset_Stock_hour(Dataset):
         return self.scaler.inverse_transform(data)
     
 
+
+# timeenc选择0
+# test = Dataset_Stock_hour(None, './', flag='train')
+class Dataset_Stock1_hour(Dataset):
+    def __init__(self, args, root_path, flag='train', size=None,
+                 features='S', data_path='../stock_data/train_set/ST世茂.csv',
+                 target='open', scale=True, timeenc=0, freq='d', seasonal_patterns=None):
+        # size [seq_len, label_len, pred_len]
+        self.args = args
+        # info
+        if size == None:
+            self.seq_len = 4
+            self.label_len = 1
+            self.pred_len = 1
+        else:
+            self.seq_len = size[0]
+            self.label_len = size[1]
+            self.pred_len = size[2]
+        # init
+        assert flag in ['train', 'test', 'val']
+        type_map = {'train': 0, 'val': 1, 'test': 2}
+        self.set_type = type_map[flag]
+
+        self.features = features
+        self.target = target
+        self.scale = scale
+        self.timeenc = timeenc
+        self.freq = freq
+
+        self.root_path = root_path
+        self.data_path = data_path
+        self.__read_data__()
+
+    def __read_data__(self):
+        self.scaler = StandardScaler()
+        df_raw = pd.read_csv(os.path.join(self.root_path,
+                                          self.data_path))
+
+        border1s = [0, 16 * 20 - self.seq_len, 16 * 20 + 6 * 20 - self.seq_len]
+        border2s = [16 * 20, 16 * 20 + 6 * 20, 16 * 20 + 8 * 20]
+        border1 = border1s[self.set_type]
+        border2 = border2s[self.set_type]
+
+        if self.features == 'M' or self.features == 'MS':
+            cols_data = df_raw.columns[1:]
+            df_data = df_raw[cols_data]
+        elif self.features == 'S':
+            df_data = df_raw[[self.target]]
+
+        if self.scale:
+            train_data = df_data[border1s[0]:border2s[0]]
+            self.scaler.fit(train_data.values)
+            data = self.scaler.transform(df_data.values)
+        else:
+            data = df_data.values
+
+        # ... 处理时间标签
+        df_stamp = df_raw[['date']][border1:border2]
+        df_stamp['date'] = pd.to_datetime(df_stamp.date)
+        if self.timeenc == 0:
+            df_stamp['month'] = df_stamp.date.apply(lambda row: row.month, 1)
+            df_stamp['day'] = df_stamp.date.apply(lambda row: row.day, 1)
+            df_stamp['weekday'] = df_stamp.date.apply(lambda row: row.weekday(), 1)
+            df_stamp['hour'] = df_stamp.date.apply(lambda row: row.hour, 1)
+            # print("df_stamp:", df_stamp.head(20))
+            data_stamp = df_stamp.drop(['date'], axis=1).values
+        elif self.timeenc == 1:
+            data_stamp = time_features(pd.to_datetime(df_stamp['date'].values), freq=self.freq)
+            data_stamp = data_stamp.transpose(1, 0) 
+
+        self.data_x = data[border1:border2]
+        self.data_y = data[border1:border2]
+
+        if self.set_type == 0 and self.args.augmentation_ratio > 0:
+            self.data_x, self.data_y, augmentation_tags = run_augmentation_single(self.data_x, self.data_y, self.args)
+
+        self.data_stamp = data_stamp
+        # print("Data shape: ", self.data_x.shape)
+        # print("Stamp shape: ", self.data_stamp.shape)
+        # print("Sample:", self.data_x[0], self.data_y[0], self.data_stamp[0])
+
+    def __getitem__(self, index):
+        s_begin = index
+        s_end = s_begin + self.seq_len
+        r_begin = s_end - self.label_len
+        r_end = r_begin + self.label_len + self.pred_len
+
+        seq_x = self.data_x[s_begin:s_end]
+        seq_y = self.data_y[r_begin:r_end]
+        seq_x_mark = self.data_stamp[s_begin:s_end]
+        seq_y_mark = self.data_stamp[r_begin:r_end]
+
+        return seq_x, seq_y, seq_x_mark, seq_y_mark
+
+    def __len__(self):
+        return len(self.data_x) - self.seq_len - self.pred_len + 1
+
+    def inverse_transform(self, data):
+        return self.scaler.inverse_transform(data)
+
+
+
 class Dataset_ETT_hour(Dataset):
+    """
+        初始化方法参数说明：
+        - args: 传递给数据集的其他参数。
+        - root_path: 数据集的根目录路径。
+        - flag: 数据集类型，取值可以是 'train'（训练集）、'val'（验证集）或 'test'（测试集）。
+        - size: 数据集的大小，格式为 [seq_len, label_len, pred_len]，分别表示输入序列长度、标签长度和预测长度。 默认是16天，1天，1天
+        - features: 特征类型，取值可以是 'S'（单变量）、'M'（多变量）或 'MS'（多变量和目标变量）。
+        - data_path: 数据文件的相对路径。
+        - target: 目标列的名称。
+        - scale: 是否对数据进行标准化处理。
+        - timeenc: 时间编码方式，0 表示不编码，1 表示使用时间特征编码。
+        - freq: 数据的时间频率，例如 'h' 表示小时，'t' 表示分钟。
+        - seasonal_patterns: 季节性模式，用于某些特定的数据集。
+    """
     def __init__(self, args, root_path, flag='train', size=None,
                  features='S', data_path='ETTh1.csv',
                  target='OT', scale=True, timeenc=0, freq='h', seasonal_patterns=None):
@@ -144,17 +260,21 @@ class Dataset_ETT_hour(Dataset):
         df_raw = pd.read_csv(os.path.join(self.root_path,
                                           self.data_path))
 
+        # 根据数据集类型确定数据边界
         border1s = [0, 12 * 30 * 24 - self.seq_len, 12 * 30 * 24 + 4 * 30 * 24 - self.seq_len]
         border2s = [12 * 30 * 24, 12 * 30 * 24 + 4 * 30 * 24, 12 * 30 * 24 + 8 * 30 * 24]
         border1 = border1s[self.set_type]
         border2 = border2s[self.set_type]
 
+        # 选择数据列：单变量或多变量，如果是多变量则是除第一列之外的所有列
+        # 如果是单变量，则通过self.target指定列
         if self.features == 'M' or self.features == 'MS':
             cols_data = df_raw.columns[1:]
             df_data = df_raw[cols_data]
         elif self.features == 'S':
             df_data = df_raw[[self.target]]
 
+        # 数据归一化
         if self.scale:
             train_data = df_data[border1s[0]:border2s[0]]
             self.scaler.fit(train_data.values)
@@ -162,6 +282,7 @@ class Dataset_ETT_hour(Dataset):
         else:
             data = df_data.values
 
+        # 处理时间标签，csv中要有'date'属性
         df_stamp = df_raw[['date']][border1:border2]
         df_stamp['date'] = pd.to_datetime(df_stamp.date)
         if self.timeenc == 0:
@@ -177,6 +298,7 @@ class Dataset_ETT_hour(Dataset):
         self.data_x = data[border1:border2]
         self.data_y = data[border1:border2]
 
+        # 数据增强
         if self.set_type == 0 and self.args.augmentation_ratio > 0:
             self.data_x, self.data_y, augmentation_tags = run_augmentation_single(self.data_x, self.data_y, self.args)
 

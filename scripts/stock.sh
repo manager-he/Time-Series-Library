@@ -3,17 +3,17 @@ export CUDA_VISIBLE_DEVICES=0
 model_name=Autoformer
 
 python -u run.py \
-  --task_name long_term_forecast \
+  --task_name short_term_forecast \
   --is_training 1 \
-  --root_path ./dataset/ETT-small/ \
-  --data_path ETTh1.csv \
-  --model_id ETTh1_96_96 \
+  --root_path ./stock_data/train_set/ \
+  --data_path ST世茂.csv \
+  --model_id ST世茂_4_1 \
   --model $model_name \
-  --data ETTh1 \
-  --features M \
-  --seq_len 96 \
-  --label_len 48 \
-  --pred_len 96 \
+  --data ST世茂 \
+  --features S \
+  --seq_len 4 \
+  --label_len 1 \
+  --pred_len 1 \
   --e_layers 2 \
   --d_layers 1 \
   --factor 3 \
@@ -24,17 +24,17 @@ python -u run.py \
   --itr 1
 
 python -u run.py \
-  --task_name long_term_forecast \
+  --task_name short_term_forecast \
   --is_training 1 \
-  --root_path ./dataset/ETT-small/ \
-  --data_path ETTh1.csv \
-  --model_id ETTh1_96_192 \
+  --root_path ./stock_data/train_set/ \
+  --data_path ST世茂.csv \
+  --model_id ST世茂_4_1 \
   --model $model_name \
-  --data ETTh1 \
-  --features M \
-  --seq_len 96 \
-  --label_len 48 \
-  --pred_len 192 \
+  --data ST世茂 \
+  --features S \
+  --seq_len 4 \
+  --label_len 1 \
+  --pred_len 1 \
   --e_layers 2 \
   --d_layers 1 \
   --factor 3 \
@@ -45,17 +45,17 @@ python -u run.py \
   --itr 1
 
 python -u run.py \
-  --task_name long_term_forecast \
+  --task_name short_term_forecast \
   --is_training 1 \
-  --root_path ./dataset/ETT-small/ \
-  --data_path ETTh1.csv \
-  --model_id ETTh1_96_336 \
+  --root_path ./stock_data/train_set/ \
+  --data_path ST世茂.csv \
+  --model_id ST世茂_4_4 \
   --model $model_name \
-  --data ETTh1 \
-  --features M \
-  --seq_len 96 \
-  --label_len 48 \
-  --pred_len 336 \
+  --data ST世茂 \
+  --features S \
+  --seq_len 4 \
+  --label_len 2 \
+  --pred_len 4 \
   --e_layers 2 \
   --d_layers 1 \
   --factor 3 \
@@ -66,17 +66,17 @@ python -u run.py \
   --itr 1
 
 python -u run.py \
-  --task_name long_term_forecast \
+  --task_name short_term_forecast \
   --is_training 1 \
-  --root_path ./dataset/ETT-small/ \
-  --data_path ETTh1.csv \
-  --model_id ETTh1_96_720 \
+  --root_path ./stock_data/train_set/ \
+  --data_path ST世茂.csv \
+  --model_id ST世茂_4_8 \
   --model $model_name \
-  --data ETTh1 \
-  --features M \
-  --seq_len 96 \
-  --label_len 48 \
-  --pred_len 720 \
+  --data ST世茂 \
+  --features S \
+  --seq_len 4 \
+  --label_len 2 \
+  --pred_len 8 \
   --e_layers 2 \
   --d_layers 1 \
   --factor 3 \
