@@ -111,8 +111,8 @@ class Dataset_Stock_hour(Dataset):
 
 
 # timeenc选择0
-# test = Dataset_Stock_hour(None, './', flag='train')
-class Dataset_Stock1_hour(Dataset):
+# test = Dataset_Stock(None, './', flag='train')
+class Dataset_Stock(Dataset):
     def __init__(self, args, root_path, flag='train', size=None,
                  features='S', data_path='../stock_data/train_set/STshimao.csv',
                  target='open', scale=True, timeenc=0, freq='d', seasonal_patterns=None):
