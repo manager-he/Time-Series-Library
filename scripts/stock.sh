@@ -11,6 +11,7 @@ python -u run.py \
   --model $model_name \
   --data stock \
   --features S \
+  --target open \
   --seq_len 4 \
   --label_len 1 \
   --pred_len 1 \
@@ -32,6 +33,7 @@ python -u run.py \
   --model $model_name \
   --data stock \
   --features S \
+  --target open \
   --seq_len 4 \
   --label_len 1 \
   --pred_len 1 \
@@ -53,6 +55,7 @@ python -u run.py \
   --model $model_name \
   --data stock \
   --features S \
+  --target open \
   --seq_len 4 \
   --label_len 2 \
   --pred_len 4 \
@@ -74,6 +77,7 @@ python -u run.py \
   --model $model_name \
   --data stock \
   --features S \
+  --target open \
   --seq_len 4 \
   --label_len 2 \
   --pred_len 8 \
