@@ -6,7 +6,7 @@ python -u run.py \
   --task_name short_term_forecast \
   --is_training 1 \
   --root_path ./stock_data/train_set/ \
-  --data_path ST世茂.csv \
+  --data_path STshimao.csv \
   --model_id ST世茂_4_1 \
   --model $model_name \
   --data ST世茂 \
@@ -27,7 +27,7 @@ python -u run.py \
   --task_name short_term_forecast \
   --is_training 1 \
   --root_path ./stock_data/train_set/ \
-  --data_path ST世茂.csv \
+  --data_path STshimao.csv \
   --model_id ST世茂_4_1 \
   --model $model_name \
   --data ST世茂 \
@@ -48,7 +48,7 @@ python -u run.py \
   --task_name short_term_forecast \
   --is_training 1 \
   --root_path ./stock_data/train_set/ \
-  --data_path ST世茂.csv \
+  --data_path STshimao.csv \
   --model_id ST世茂_4_4 \
   --model $model_name \
   --data ST世茂 \
@@ -69,7 +69,7 @@ python -u run.py \
   --task_name short_term_forecast \
   --is_training 1 \
   --root_path ./stock_data/train_set/ \
-  --data_path ST世茂.csv \
+  --data_path STshimao.csv \
   --model_id ST世茂_4_8 \
   --model $model_name \
   --data ST世茂 \

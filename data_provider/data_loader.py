@@ -114,7 +114,7 @@ class Dataset_Stock_hour(Dataset):
 # test = Dataset_Stock_hour(None, './', flag='train')
 class Dataset_Stock1_hour(Dataset):
     def __init__(self, args, root_path, flag='train', size=None,
-                 features='S', data_path='../stock_data/train_set/ST世茂.csv',
+                 features='S', data_path='../stock_data/train_set/STshimao.csv',
                  target='open', scale=True, timeenc=0, freq='d', seasonal_patterns=None):
         # size [seq_len, label_len, pred_len]
         self.args = args
