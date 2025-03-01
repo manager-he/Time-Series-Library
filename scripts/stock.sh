@@ -9,7 +9,7 @@ python -u run.py \
   --data_path STshimao.csv \
   --model_id ST世茂_4_1 \
   --model $model_name \
-  --data ST世茂 \
+  --data STshimao \
   --features S \
   --seq_len 4 \
   --label_len 1 \
@@ -30,7 +30,7 @@ python -u run.py \
   --data_path STshimao.csv \
   --model_id ST世茂_4_1 \
   --model $model_name \
-  --data ST世茂 \
+  --data STshimao \
   --features S \
   --seq_len 4 \
   --label_len 1 \
@@ -51,7 +51,7 @@ python -u run.py \
   --data_path STshimao.csv \
   --model_id ST世茂_4_4 \
   --model $model_name \
-  --data ST世茂 \
+  --data STshimao \
   --features S \
   --seq_len 4 \
   --label_len 2 \
@@ -72,7 +72,7 @@ python -u run.py \
   --data_path STshimao.csv \
   --model_id ST世茂_4_8 \
   --model $model_name \
-  --data ST世茂 \
+  --data STshimao \
   --features S \
   --seq_len 4 \
   --label_len 2 \
