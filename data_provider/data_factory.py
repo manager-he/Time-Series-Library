@@ -1,4 +1,4 @@
-from data_provider.data_loader import Dataset_ETT_hour, Dataset_ETT_minute, Dataset_Custom, Dataset_M4, PSMSegLoader, Dataset_Stock, \
+from data_provider.data_loader import Dataset_ETT_hour, Dataset_ETT_minute, Dataset_Custom, Dataset_M4, PSMSegLoader, Dataset_Stock, Dataset_MyM4, \
     MSLSegLoader, SMAPSegLoader, SMDSegLoader, SWATSegLoader, UEAloader
 from data_provider.uea import collate_fn
 from torch.utils.data import DataLoader
@@ -17,6 +17,7 @@ data_dict = {
     'SWAT': SWATSegLoader,
     'UEA': UEAloader,
     'stock': Dataset_Stock,
+    'finance': Dataset_MyM4,
 }
 
 

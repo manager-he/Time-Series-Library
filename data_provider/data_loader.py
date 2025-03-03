@@ -600,6 +600,25 @@ class Dataset_M4(Dataset):
             insample_mask[i, -len(ts):] = 1.0
         return insample, insample_mask
 
+class Dataset_MyM4(Dataset_M4):
+    def __init__(self, args, root_path, flag='pred', size=None,
+                 features='S', data_path='ETTh1.csv',
+                 target='OT', scale=False, inverse=False, timeenc=0, freq='15min',
+                 seasonal_patterns='Yearly', category='Finance'):
+        super(Dataset_MyM4, self).__init__(args, root_path, flag, size, features, data_path, target, scale, inverse, timeenc, freq, seasonal_patterns)
+        self.category = category
+        
+    def __read_data__(self):
+        if self.flag == 'train':
+            dataset = M4Dataset.load(training=True, dataset_file=self.root_path)
+        else:
+            dataset = M4Dataset.load(training=False, dataset_file=self.root_path)
+        training_values = dataset.values[np.array(dataset.groups == self.seasonal_patterns) & np.array(dataset.categories == self.category)]
+        # training_values = np.array(
+        #     [v[~np.isnan(v)] for v in
+        #      dataset.values[dataset.groups == self.seasonal_patterns]])  # split different frequencies
+        self.ids = np.array([i for i in dataset.ids[dataset.groups == self.seasonal_patterns]])
+        self.timeseries = [ts for ts in training_values]
 
 class PSMSegLoader(Dataset):
     def __init__(self, args, root_path, win_size, step=1, flag="train"):
