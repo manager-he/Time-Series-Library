@@ -77,6 +77,7 @@ class M4Dataset:
     frequencies: np.ndarray
     horizons: np.ndarray
     values: np.ndarray
+    category: np.ndarray ### !!自己加的一行
 
     @staticmethod
     def load(training: bool = True, dataset_file: str = '../dataset/m4') -> 'M4Dataset':
