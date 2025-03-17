@@ -12,20 +12,21 @@ from data_provider.uea import subsample, interpolate_missing, Normalizer
 from sktime.datasets import load_from_tsfile_to_dataframe
 import warnings
 from utils.augmentation import run_augmentation_single
+import datetime
 
 warnings.filterwarnings('ignore')
 
-class Dataset_Stock_hour(Dataset):
-    def __init__(self, args, root_path, flag='train', size=None,
-                 features='S', data_path='../stock_data/train_set/ST世茂.csv',
-                 target='OT', scale=True, timeenc=0, freq='h', seasonal_patterns=None):
+class Dataset_Stock_day(Dataset):
+    def __init__(self, args, root_path='../stock_data/train_set', flag='train', size=None,
+                 features='M', data_path='碧桂园_stock_filtered_with_news_grade.xlsx',
+                 target='rank', scale=True, timeenc=0, freq='d', seasonal_patterns=None):
         # size [seq_len, label_len, pred_len]
         self.args = args
         # info
         if size == None:
-            self.seq_len = ...
-            self.label_len = ...
-            self.pred_len = ...
+            self.seq_len = 30
+            self.label_len = 15
+            self.pred_len = 15
         else:
             self.seq_len = size[0]
             self.label_len = size[1]
@@ -47,13 +48,25 @@ class Dataset_Stock_hour(Dataset):
 
     def __read_data__(self):
         self.scaler = StandardScaler()
-        df_raw = pd.read_csv(os.path.join(self.root_path,
+        df_raw = pd.read_excel(os.path.join(self.root_path,
                                           self.data_path))
 
-        border1s = [0, 12 * 30 * 24 - self.seq_len, 12 * 30 * 24 + 4 * 30 * 24 - self.seq_len]
-        border2s = [12 * 30 * 24, 12 * 30 * 24 + 4 * 30 * 24, 12 * 30 * 24 + 8 * 30 * 24]
+        # 计算边界值
+        total_records = 679
+        num_train = int(total_records * 0.7)
+        num_test = int(total_records * 0.1)
+        num_vali = total_records - num_train - num_test
+
+        border1s = [0, num_train - self.seq_len, total_records - num_test - self.seq_len]
+        border2s = [num_train, num_train + num_vali, total_records]
         border1 = border1s[self.set_type]
         border2 = border2s[self.set_type]
+
+        # total_days = 679
+        # border1s = [0, int(total_days * 0.7) - self.seq_len, int(total_days * 0.9) - self.seq_len]
+        # border2s = [int(total_days * 0.7), int(total_days * 0.9), total_days]
+        # border1 = border1s[self.set_type]
+        # border2 = border2s[self.set_type]
 
         if self.features == 'M' or self.features == 'MS':
             cols_data = df_raw.columns[1:]
@@ -75,7 +88,7 @@ class Dataset_Stock_hour(Dataset):
             df_stamp['month'] = df_stamp.date.apply(lambda row: row.month, 1)
             df_stamp['day'] = df_stamp.date.apply(lambda row: row.day, 1)
             df_stamp['weekday'] = df_stamp.date.apply(lambda row: row.weekday(), 1)
-            df_stamp['hour'] = df_stamp.date.apply(lambda row: row.hour, 1)
+            # df_stamp['hour'] = df_stamp.date.apply(lambda row: row.hour, 1)
             data_stamp = df_stamp.drop(['date'], 1).values
         elif self.timeenc == 1:
             data_stamp = time_features(pd.to_datetime(df_stamp['date'].values), freq=self.freq)
